@@ -1,16 +1,4 @@
-## Quick Start
-
-To create a project, simply run:
-
-```bash
-npx create-nodejs-ts-app <project-name>
-```
-
-Or
-
-```bash
-npm init nodejs-ts-app <project-name>
-```
+# Quick Start
 
 ## Commands
 
