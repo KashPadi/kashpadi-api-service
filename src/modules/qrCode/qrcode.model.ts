@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import toJSON from '../toJSON/toJSON';
-import { ITokenDoc, ITokenModel } from './token.interfaces';
+import { IQrCodeDoc, IQrCodeModel } from './qrcode.interface';
 
-const qrCodeSchema = new mongoose.Schema<ITokenDoc, ITokenModel>(
+const qrCodeSchema = new mongoose.Schema<IQrCodeDoc, IQrCodeModel>(
   {
     user: {
       type: String,
@@ -34,6 +34,6 @@ const qrCodeSchema = new mongoose.Schema<ITokenDoc, ITokenModel>(
 // add plugin that converts mongoose to json
 qrCodeSchema.plugin(toJSON);
 
-const QrCode = mongoose.model<ITokenDoc, ITokenModel>('qrCode', qrCodeSchema);
+const QrCode = mongoose.model<IQrCodeDoc, IQrCodeModel>('qrCode', qrCodeSchema);
 
 export default QrCode;
