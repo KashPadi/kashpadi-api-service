@@ -15,11 +15,10 @@ const qrCodeSchema = new mongoose.Schema<IQrCodeDoc, IQrCodeModel>(
     },
     lastUsedDate: {
       type: Date,
-      required: true,
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     disabled: {
       type: Boolean,
