@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import QR from 'qrcode';
 import QrCode from './qrcode.model';
 import Note from './note.model';
+// import { IOptions, QueryResult } from '../paginate/paginate';
 
 export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any): Promise<any> => {
   const { denomination, quantity, visibility } = data;
@@ -13,8 +14,8 @@ export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any)
     denomination,
     quantity,
     visibility,
-    noteId: '1233',
-    bundle: '2213',
+    noteId: 'vhvhvvgvgc',
+    bundleId: '2213',
   });
 
   const qrExist = await QrCode.findOne({ userId });
@@ -23,7 +24,7 @@ export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any)
   // If qr exist, update disable to true and then create a new qr record
   if (!qrExist) {
     // Generate encrypted data
-    const encryptedData = jwt.sign(note, 'process.env.TOKEN_KEY', {
+    const encryptedData = jwt.sign({ note }, 'process.env.TOKEN_KEY', {
       expiresIn: '1d',
     });
     const dataImage = await QR.toDataURL(encryptedData);
@@ -35,5 +36,10 @@ export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any)
     returnData = await QrCode.findOneAndUpdate({ userId }, { $set: { disabled: true } });
   }
 
-  return returnData;
+  return { qrcode: returnData, note };
+};
+
+export const queryNotes = async (): Promise<any> => {
+  const users = await Note.find({});
+  return users;
 };
