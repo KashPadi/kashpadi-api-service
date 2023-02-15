@@ -1,42 +1,56 @@
+/* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/prefer-default-export */
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import QR from 'qrcode';
+import config from '../../config/config';
 import QrCode from './qrcode.model';
 import Note from './note.model';
 // import { IOptions, QueryResult } from '../paginate/paginate';
 
 export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any): Promise<any> => {
-  const { denomination, quantity, visibility } = data;
+  const { denomination, quantity } = data;
 
   const note = Note.create({
     denomination,
     quantity,
-    visibility,
+    visibility: 'public',
     noteId: 'vhvhvvgvgc',
     bundleId: '2213',
   });
 
-  const qrExist = await QrCode.findOne({ userId });
+  // const qrExist = await QrCode.findOne({ userId });
   let returnData;
 
-  // If qr exist, update disable to true and then create a new qr record
-  if (!qrExist) {
+  try {
     // Generate encrypted data
-    const encryptedData = jwt.sign({ note }, 'process.env.TOKEN_KEY', {
-      expiresIn: '1d',
-    });
-    const dataImage = await QR.toDataURL(encryptedData);
+    const encryptedData = jwt.sign(note, config.jwt.secret);
+    // eslint-disable-next-line no-console
+    console.log(encryptedData);
+    const dataImage = await QR.toDataURL(JSON.stringify(encryptedData));
     returnData = await QrCode.create({
       dataURI: dataImage,
       user: userId,
     });
-  } else {
-    returnData = await QrCode.findOneAndUpdate({ userId }, { $set: { disabled: true } });
+    return { qrcode: returnData, note };
+  } catch (error) {
+    console.log(error);
   }
-
-  return { qrcode: returnData, note };
+  // If qr exist, update disable to true and then create a new qr record
+  // if (!qrExist) {
+  //   // Generate encrypted data
+  //   const encryptedData = jwt.sign(note, config.jwt.secret);
+  //   // eslint-disable-next-line no-console
+  //   console.log(encryptedData);
+  //   const dataImage = await QR.toDataURL(JSON.stringify(encryptedData));
+  //   returnData = await QrCode.create({
+  //     dataURI: dataImage,
+  //     user: userId,
+  //   });
+  // } else {
+  //   returnData = await QrCode.findOneAndUpdate({ userId }, { $set: { disabled: true } });
+  // }
 };
 
 export const queryNotes = async (): Promise<any> => {

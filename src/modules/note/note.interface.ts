@@ -6,7 +6,7 @@ export interface INote {
   quantity: string;
   redeemDate: Date;
   redeemed: boolean;
-  visibilty: string;
+  visibility: string;
   noteId: string;
   bundleId: string;
 }

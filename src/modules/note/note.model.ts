@@ -20,7 +20,7 @@ const noteSchema = new mongoose.Schema<INoteDoc, INoteModel>(
       type: Boolean,
       default: false,
     },
-    visibilty: {
+    visibility: {
       type: String,
       enum: [noteTypes.PUBLIC, noteTypes.PRIVATE],
       required: true,
