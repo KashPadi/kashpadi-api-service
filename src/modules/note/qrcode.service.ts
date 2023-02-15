@@ -10,12 +10,26 @@ import Note from './note.model';
 // import { IOptions, QueryResult } from '../paginate/paginate';
 
 export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any): Promise<any> => {
-  const { denomination, quantity } = data;
+  const { denomination, quantity, visibility } = data;
 
-  const note = Note.create({
+  function dataURItoBlob(dataURI) {
+    const byteString = atob(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    // write the bytes of the string to an ArrayBuffer
+    const ab = new ArrayBuffer(byteString.length);
+    let ia = new Uint8Array(ab);
+    for (const i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  }
+  const note = await Note.create({
     denomination,
     quantity,
-    visibility: 'public',
+    visibility,
     noteId: 'vhvhvvgvgc',
     bundleId: '2213',
   });
@@ -25,14 +39,19 @@ export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any)
 
   try {
     // Generate encrypted data
-    const encryptedData = jwt.sign(note, config.jwt.secret);
+    const encryptedData = jwt.sign(note.toJSON(), config.jwt.secret, {
+      expiresIn: 604800, // 1 week
+    });
     // eslint-disable-next-line no-console
     console.log(encryptedData);
-    const dataImage = await QR.toDataURL(JSON.stringify(encryptedData));
+    const dataImage = await QR.toString(JSON.stringify(encryptedData));
+    const blob = dataURItoBlob(dataImage);
+    const resultFile = new File([blob], 'file_name');
     returnData = await QrCode.create({
-      dataURI: dataImage,
+      dataURI: resultFile,
       user: userId,
     });
+    console.log('returned data', returnData);
     return { qrcode: returnData, note };
   } catch (error) {
     console.log(error);
