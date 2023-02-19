@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 /* eslint-disable import/prefer-default-export */
@@ -12,23 +13,23 @@ import Note from './note.model';
 export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any): Promise<any> => {
   const { denomination, quantity, visibility } = data;
 
-  function dataURItoBlob(dataURI) {
+  function dataURItoBlob(dataURI: any) {
     const byteString = atob(dataURI.split(',')[1]);
 
     // separate out the mime component
-    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const mimeString: any = dataURI.split(',')[0].split(':')[1].split(';')[0];
 
     // write the bytes of the string to an ArrayBuffer
     const ab = new ArrayBuffer(byteString.length);
-    let ia = new Uint8Array(ab);
-    for (const i = 0; i < byteString.length; i++) {
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
       ia[i] = byteString.charCodeAt(i);
     }
     return new Blob([ab], { type: mimeString });
   }
   const note = await Note.create({
     denomination,
-    quantity,
+    quantity: 100,
     visibility,
     noteId: 'vhvhvvgvgc',
     bundleId: '2213',
