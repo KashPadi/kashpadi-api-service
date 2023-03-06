@@ -4,14 +4,15 @@
 /* eslint-disable import/prefer-default-export */
 import mongoose from 'mongoose';
 import QR from 'qrcode';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 // import { encodeData } from 'src/utils';
-import config from '../../config/config';
+// import config from '../../config/config';
 import QrCode from './qrcode.model';
 import Note from './note.model';
 
 const encodeData = async (data: object, key: string): Promise<string> => {
   const iv = crypto.randomBytes(16);
+  console.log('IV', iv);
   const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
   let encrypted = cipher.update(JSON.stringify(data));
   encrypted = Buffer.concat([encrypted, cipher.final()]);
@@ -32,8 +33,13 @@ export const generateQrCode = async (userId: mongoose.Types.ObjectId, data: any)
   let returnData;
 
   try {
+    const exampleData = {
+      name: 'John Doe',
+      age: 30,
+      address: '123 Main St',
+    };
     // Generate encrypted data
-    const encryptedData = await encodeData(note.toJSON(), config.jwt.secret);
+    const encryptedData = await encodeData(exampleData, 'mysecretkey');
 
     // eslint-disable-next-line no-console
     console.log(encryptedData);
